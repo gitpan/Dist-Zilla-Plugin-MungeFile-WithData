@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::MungeFile::WithData;
 {
-  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.001';
+  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.002';
 }
-# git description: d01ec9e
+# git description: v0.001-7-gef1dd3d
 
 BEGIN {
   $Dist::Zilla::Plugin::MungeFile::WithData::AUTHORITY = 'cpan:ETHER';
@@ -17,14 +17,42 @@ with (
     'Dist::Zilla::Role::TextTemplate',
     'Dist::Zilla::Role::FileFinderUser' => { default_finders => [ ] },
 );
-
-use Module::Metadata;
+use MooseX::SlurpyConstructor;
+use List::Util 'first';
 use namespace::autoclean;
+
+sub mvp_multivalue_args { qw(files) }
+sub mvp_aliases { { _file => 'files' } }
+
+has files => (
+    isa  => 'ArrayRef[Str]',
+    lazy => 1,
+    default => sub { [] },
+    traits => ['Array'],
+    handles => { files => 'elements' },
+);
+
+has _extra_args => (
+    isa => 'HashRef[Str]',
+    init_arg => undef,
+    lazy => 1,
+    default => sub { {} },
+    traits => ['Hash'],
+    handles => { _extra_args => 'elements' },
+    slurpy => 1,
+);
 
 sub munge_files
 {
     my $self = shift;
-    $self->munge_file($_) for @{ $self->found_files };
+
+    my @files = map {
+        my $filename = $_;
+        my $file = first { $_->name eq $filename } @{ $self->zilla->files };
+        defined $file ? $file : ()
+    } $self->files;
+
+    $self->munge_file($_) for @files, @{ $self->found_files };
 }
 
 sub munge_file
@@ -33,41 +61,25 @@ sub munge_file
 
     $self->log_debug([ 'MungeWithData updating contents of %s in memory', $file->name ]);
 
+    my $content = $file->content;
+
+    my $data;
+    if ($content =~ m/\n__DATA__\n/sp)
+    {
+        $data = ${^POSTMATCH};
+        $data =~ s/\n__END__\n.*$/\n/s;
+    }
+
     $file->content(
         $self->fill_in_string(
-            $file->content,
+            $content,
             {
+                $self->_extra_args,
                 dist => \($self->zilla),
-                DATA => \($self->_data_from_file($file)),
+                DATA => \$data,
             },
         )
     );
-}
-
-sub _data_from_file
-{
-    my ($self, $file) = @_;
-
-    my $pkg = Module::Metadata->new_from_file($file->name)->name;
-
-    # note: DATA is a global, and if code ever tries to read from it more than
-    # once, the second time will fail -- if this is a problem, we will need to
-    # import Data::Section into the package and then have everything use that
-    # instead (and patch to handle reading from other packages), or seek
-    # to position 0 and find __DATA__ again -- also see Data::Section::Simple
-
-    require $file->name;
-    my $dh = do { no strict 'refs'; \*{"$pkg\::DATA"} };
-    # TODO: check defined fileno *$dh ?
-
-    my $data = '';
-    while (my $line = <$dh>)
-    {
-        last if $line =~ /^__END__/;
-        $data .= $line;
-    }
-
-    return $data;
 }
 
 __PACKAGE__->meta->make_immutable;
@@ -86,23 +98,26 @@ Dist::Zilla::Plugin::MungeFile::WithData - Modify files in the build, with templ
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
 In your F<dist.ini>:
 
     [MungeFile::WithData]
-    finder = :MainModule
+    file = lib/My/Module.pm
+    house = maison
 
 And during the build, F<lib/My/Module.pm>:
 
     my @stuff = qw(
-        {{ join "    \n",
+        {{
+            join "    \n",
             map { expensive_build_time_sub($_) }
             split(' ', $DATA)   # awk-style whitespace splitting
         }}
     );
+    my ${{ $house }} = 'my castle';
     __DATA__
     alpha
     beta
@@ -115,6 +130,7 @@ Is transformed to:
         SOMETHING_WITH_BETA
         SOMETHING_WITH_GAMMA
     );
+    my $maison = 'my castle';
 
 =head1 DESCRIPTION
 
@@ -125,23 +141,14 @@ content from the file's C<__DATA__> section.
 L<Text::Template> is used to transform the file by making the C<< $DATA >>
 variable available to all code blocks within C<< {{ }} >> sections.
 
-The module being transformed is loaded first, before the template content is
-transformed, in order to extract the C<__DATA__> section. While it would seem
-that the module will not compile in this state, it is possible to craft the
-file content in order to allow the file to parse (e.g. see
-L<Acme::CPANAuthors::Nonhuman> version 0.005).
+The data section is extracted by scanning the file for C<< qr/^__DATA__$/ >>,
+so this may pose a problem for you if you include this string in a here-doc or
+some other construct.  However, this method means we do not have to load the
+file before applying the template, which makes it much easier to construct
+your templates in F<.pm> files (i.e. not having to put C<{{> after a comment
+and inside a C<do> block, as was previously required).
 
-This is a wacky idea though (ether discovered she could be I<clever>! What
-fun!) and this will not be a permanent feature of this plugin - in the future
-it is intended that the C<__DATA__> section will instead be extracted by
-scanning the file for C<< qr/^__DATA__$/ >>.
-
-=head1 WARNING!
-
-This is not the feature set that is intended to be provided by this plugin.
-Use with discretion until the interface and features have stabilized!
-
-=for Pod::Coverage munge_files munge_file
+=for Pod::Coverage munge_files munge_file mvp_aliases
 
 =head1 OPTIONS
 
@@ -160,6 +167,17 @@ You can define your own with the
 L<Dist::Zilla::Plugin::FileFinder::ByName|[FileFinder::ByName]> plugin.
 
 The default is C<:MainModule>.
+
+=item * C<file>
+
+Indicates the filename in the dist to be operated upon; this file can exist on
+disk, or have been generated by some other plugin.  Can be included more than once.
+
+At least one of the C<finder> or C<file> options is required.
+
+=item * C<arbitrary option>
+
+All other keys/values provided will be passed to the template as is.
 
 =back
 

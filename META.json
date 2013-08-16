@@ -43,10 +43,11 @@
             "Dist::Zilla::Role::FileFinderUser" : "0",
             "Dist::Zilla::Role::FileMunger" : "0",
             "Dist::Zilla::Role::TextTemplate" : "0",
-            "Module::Metadata" : "0",
+            "List::Util" : "0",
             "Moose" : "0",
+            "MooseX::SlurpyConstructor" : "0",
             "namespace::autoclean" : "0",
-            "perl" : "5.006",
+            "perl" : "5.009005",
             "strict" : "0",
             "warnings" : "0"
          }
@@ -66,7 +67,7 @@
    "provides" : {
       "Dist::Zilla::Plugin::MungeFile::WithData" : {
          "file" : "lib/Dist/Zilla/Plugin/MungeFile/WithData.pm",
-         "version" : "0.001"
+         "version" : "0.002"
       }
    },
    "release_status" : "stable",
@@ -82,7 +83,7 @@
          "web" : "https://github.com/karenetheridge/Dist-Zilla-Plugin-MungeFile-WithData"
       }
    },
-   "version" : "0.001",
+   "version" : "0.002",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.019002"

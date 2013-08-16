@@ -3,17 +3,7 @@ use warnings FATAL => 'all';
 
 use Test::More;
 use Test::Warnings;
-
 use Test::DZil;
-
-# create a dist with a boring dist.ini
-# and GatherDir
-# and our plugin
-# create an inline file
-# with a template and a __DATA__ section
-
-# the test consists of reading the file out of the build dir
-# and seeing that the content was transformed.
 
 my $tzil = Builder->from_config(
     { dist_root => 't/corpus/basic' },
@@ -21,7 +11,7 @@ my $tzil = Builder->from_config(
         add_files => {
             'source/dist.ini' => simple_ini(
                 [ GatherDir => ],
-                [ 'MungeFile::WithData' => { finder => ':MainModule' } ],
+                [ 'MungeFile::WithData' => { files => ['lib/Module.pm'] } ],
             ),
             'source/lib/Module.pm' => <<'MODULE'
 package Module;
