@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::MungeFile::WithData;
 {
-  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.002';
+  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.003';
 }
-# git description: v0.001-7-gef1dd3d
+# git description: v0.002-2-gfd159fc
 
 BEGIN {
   $Dist::Zilla::Plugin::MungeFile::WithData::AUTHORITY = 'cpan:ETHER';
@@ -76,6 +76,7 @@ sub munge_file
             {
                 $self->_extra_args,
                 dist => \($self->zilla),
+                plugin => \($self),
                 DATA => \$data,
             },
         )
@@ -90,7 +91,7 @@ __END__
 
 =encoding utf-8
 
-=for :stopwords Karen Etheridge FileFinder irc
+=for :stopwords Karen Etheridge FileFinder syntactual irc
 
 =head1 NAME
 
@@ -98,7 +99,7 @@ Dist::Zilla::Plugin::MungeFile::WithData - Modify files in the build, with templ
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 
@@ -186,7 +187,17 @@ All other keys/values provided will be passed to the template as is.
 This module was originally a part of the L<Acme::CPANAuthors::Nonhuman>
 distribution, used to transform a C<DATA> section containing a list of PAUSE
 ids to their corresponding names, as well as embedded HTML with everyone's
-avatar images.
+avatar images.  It used to only work on F<.pm> files, by first loading the
+module and then reading from a filehandle created from C<< \*{"$pkg\::DATA"} >>.
+This also required the file to jump through some convoluted syntactual hoops
+to ensure that the file was still compilable B<before> the template was run.
+(Check it out and roll your eyes:
+L<https://github.com/karenetheridge/Acme-CPANAuthors-Nonhuman/blob/v0.005/lib/Acme/CPANAuthors/Nonhuman.pm#L18>)
+
+Now that we support munging all file types, we are forced to parse the file
+more dumbly (by scanning for C<qr/^__DATA__/>), which also removes the need
+for these silly syntax games. The moral of the story is that simple code
+usually B<is> better!
 
 =head1 SUPPORT
 
