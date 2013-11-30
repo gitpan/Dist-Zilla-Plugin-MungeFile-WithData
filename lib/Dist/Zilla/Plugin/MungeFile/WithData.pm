@@ -1,14 +1,14 @@
 use strict;
 use warnings;
 package Dist::Zilla::Plugin::MungeFile::WithData;
+{
+  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.005';
+}
+# git description: v0.004-7-g8865897
+
 BEGIN {
   $Dist::Zilla::Plugin::MungeFile::WithData::AUTHORITY = 'cpan:ETHER';
 }
-{
-  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.004';
-}
-# git description: v0.003-4-ga453de1
-
 # ABSTRACT: Modify files in the build, with templates and DATA section
 
 use Moose;
@@ -59,7 +59,7 @@ sub munge_file
 {
     my ($self, $file) = @_;
 
-    $self->log_debug([ 'MungeWithData updating contents of %s in memory', $file->name ]);
+    $self->log_debug('updating contents of ' . $file->name . ' in memory');
 
     my $content = $file->content;
 
@@ -89,7 +89,7 @@ __END__
 
 =pod
 
-=encoding utf-8
+=encoding UTF-8
 
 =for :stopwords Karen Etheridge FileFinder syntactual irc
 
@@ -99,7 +99,7 @@ Dist::Zilla::Plugin::MungeFile::WithData - Modify files in the build, with templ
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 

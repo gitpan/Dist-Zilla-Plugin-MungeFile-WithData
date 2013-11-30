@@ -2,7 +2,7 @@ use strict;
 use warnings FATAL => 'all';
 
 use Test::More;
-use Test::Warnings;
+use if $ENV{AUTHOR_TESTING}, 'Test::Warnings';
 
 use Test::DZil;
 
@@ -16,7 +16,7 @@ use Test::DZil;
 # and seeing that the content was transformed.
 
 my $tzil = Builder->from_config(
-    { dist_root => 't/corpus/basic' },
+    { dist_root => 't/does_not_exist' },
     {
         add_files => {
             'source/dist.ini' => simple_ini(
