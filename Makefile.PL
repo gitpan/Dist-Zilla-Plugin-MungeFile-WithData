@@ -75,7 +75,7 @@ my %WriteMakefileArgs = (
     "Dist::Zilla::Role::TextTemplate" => 0,
     "List::Util" => 0,
     "Moose" => 0,
-    "MooseX::SlurpyConstructor" => 0,
+    "MooseX::SlurpyConstructor" => "1.2",
     "namespace::autoclean" => 0,
     "strict" => 0,
     "warnings" => 0
@@ -87,7 +87,7 @@ my %WriteMakefileArgs = (
     "Test::More" => 0,
     "if" => 0
   },
-  "VERSION" => "0.005",
+  "VERSION" => "0.006",
   "test" => {
     "TESTS" => "t/*.t"
   }

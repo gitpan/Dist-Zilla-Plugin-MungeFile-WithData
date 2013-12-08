@@ -1,7 +1,7 @@
 
 
 This archive contains the distribution Dist-Zilla-Plugin-MungeFile-WithData,
-version 0.005:
+version 0.006:
 
   Modify files in the build, with templates and DATA section
 

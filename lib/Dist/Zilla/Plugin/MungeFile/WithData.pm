@@ -2,9 +2,9 @@ use strict;
 use warnings;
 package Dist::Zilla::Plugin::MungeFile::WithData;
 {
-  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.005';
+  $Dist::Zilla::Plugin::MungeFile::WithData::VERSION = '0.006';
 }
-# git description: v0.004-7-g8865897
+# git description: v0.005-1-gae74d80
 
 BEGIN {
   $Dist::Zilla::Plugin::MungeFile::WithData::AUTHORITY = 'cpan:ETHER';
@@ -17,7 +17,7 @@ with (
     'Dist::Zilla::Role::TextTemplate',
     'Dist::Zilla::Role::FileFinderUser' => { default_finders => [ ] },
 );
-use MooseX::SlurpyConstructor;
+use MooseX::SlurpyConstructor 1.2;
 use List::Util 'first';
 use namespace::autoclean;
 
@@ -99,7 +99,7 @@ Dist::Zilla::Plugin::MungeFile::WithData - Modify files in the build, with templ
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 

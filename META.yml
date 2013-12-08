@@ -12,7 +12,7 @@ configure_requires:
   ExtUtils::MakeMaker: 6.30
   Module::Build::Tiny: 0.030
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.132830'
+generated_by: 'Dist::Zilla version 5.006, CPAN::Meta::Converter version 2.133380'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -26,14 +26,14 @@ no_index:
 provides:
   Dist::Zilla::Plugin::MungeFile::WithData:
     file: lib/Dist/Zilla/Plugin/MungeFile/WithData.pm
-    version: 0.005
+    version: 0.006
 requires:
   Dist::Zilla::Role::FileFinderUser: 0
   Dist::Zilla::Role::FileMunger: 0
   Dist::Zilla::Role::TextTemplate: 0
   List::Util: 0
   Moose: 0
-  MooseX::SlurpyConstructor: 0
+  MooseX::SlurpyConstructor: 1.2
   namespace::autoclean: 0
   perl: 5.009005
   strict: 0
@@ -44,7 +44,7 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=Dist-Zilla-Plugin-MungeFile-WithData
   homepage: https://github.com/karenetheridge/Dist-Zilla-Plugin-MungeFile-WithData
   repository: https://github.com/karenetheridge/Dist-Zilla-Plugin-MungeFile-WithData.git
-version: 0.005
+version: 0.006
 x_Dist_Zilla:
   perl:
     version: 5.019006
@@ -140,7 +140,7 @@ x_Dist_Zilla:
             - ':ExecFiles'
             - '@Author::ETHER/Examples'
       name: '@Author::ETHER/Test::Compile'
-      version: 2.038
+      version: 2.039
     -
       class: Dist::Zilla::Plugin::Test::NoTabs
       config:
@@ -321,7 +321,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::ReadmeAnyFromPod
       name: '@Author::ETHER/ReadmeAnyFromPod'
-      version: 0.133290
+      version: 0.133360
     -
       class: Dist::Zilla::Plugin::GithubMeta
       name: '@Author::ETHER/GithubMeta'
@@ -399,7 +399,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::CheckSelfDependency
       name: '@Author::ETHER/CheckSelfDependency'
-      version: 0.005
+      version: 0.006
     -
       class: Dist::Zilla::Plugin::Run::AfterBuild
       name: '@Author::ETHER/Run::AfterBuild'
@@ -451,7 +451,7 @@ x_Dist_Zilla:
     -
       class: Dist::Zilla::Plugin::GitHub::Update
       name: '@Author::ETHER/GitHub::Update'
-      version: 0.35
+      version: 0.36
     -
       class: Dist::Zilla::Plugin::Git::Push
       name: '@Author::ETHER/Git::Push'
